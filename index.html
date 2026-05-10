@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Goodbye Gift OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --window-bg: #f8f9fa; 
+            --border-light: #ffffff;
+            --border-dark: #6c5ce7; 
+            --title-bar: linear-gradient(90deg, #fd79a8, #e84393, #6c5ce7); 
+            --text-color: #2d3436;
+            --taskbar-bg: linear-gradient(90deg, #00cec9, #0984e3, #6c5ce7); 
+            --icon-hover: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(255, 159, 243, 0.4), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(72, 219, 251, 0.4), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(254, 202, 87, 0.4), transparent 50%),
+                linear-gradient(135deg, #ff9a9e, #fecfef, #f6d365, #a1c4fd, #c2e9fb);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 400% 400%;
+            animation: gradientBG 60s ease infinite;
+            font-family: 'VT323', monospace;
+            color: var(--text-color);
+            overflow: hidden; 
+            height: 100vh;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23feca57" stroke="%23ff9ff3" stroke-width="1" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>') 12 12, auto; 
+        }
+
+        body::before {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('assets/w.svg');
+            background-size: 120px 120px;
+            background-position: center;
+            background-repeat: space;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- CLASSIC OS TOP BAR --- */
+        #classic-top-bar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 25px;
+            background-color: var(--window-bg);
+            border-bottom: 2px solid var(--border-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 10px; box-sizing: border-box;
+            z-index: 10000;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+        .menu-items { display: flex; gap: 15px; }
+        .menu-item { cursor: pointer; padding: 0 8px; height: 25px; line-height: 25px; user-select: none; font-weight: bold; }
+        .menu-item:hover { background-color: var(--border-dark); color: white; }
+        .menu-item.logo { font-size: 1.1rem; padding: 0 5px; }
+
+        /* --- CRT EFFECT FOR IMAGES --- */
+        .crt-wrapper {
+            position: relative; display: inline-block; overflow: hidden;
+            width: 100%; height: 100%;
+        }
+        .crt-wrapper::after {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 4px, 3px 100%; pointer-events: none;
+        }
+        .crt-img {
+            filter: sepia(0.2) blur(0.5px) contrast(1.2) saturate(1.1);
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+
+        /* --- DESKTOP ICONS --- */
+        #desktop {
+            position: absolute;
+            top: 25px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - 70px);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .desktop-icon {
+            position: absolute;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: grab;
+            padding: 5px;
+            border: 1px dotted transparent;
+            pointer-events: auto;
+        }
+
+        .desktop-icon:hover {
+            background-color: var(--icon-hover);
+            border: 1px dotted var(--border-dark);
+        }
+
+        .icon-img {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            user-select: none;
+        }
+
+        .icon-text {
+            font-size: 1.1rem;
+            background-color: var(--window-bg);
+            padding: 2px 4px;
+            border: 1px solid var(--border-dark);
+            user-select: none;
+        }
+
+        /* --- MUSIC PLAYER WINDOW --- */
+        #music-window { top: 30px; left: calc(100vw - 360px); width: 340px; height: 380px; }
+        #timer-window { top: 100px; left: 30px; width: 450px; height: 250px; }
+        #about-window { top: 150px; left: 350px; width: 350px; height: 250px; z-index: 10001; }
+        #adblock-window { top: 120px; left: 200px; width: 450px; height: 350px; }
+        #notepad-window { top: 70px; left: 100px; width: 500px; height: 400px; }
+
+        .music-controls { display: flex; gap: 10px; width: 100%; box-sizing: border-box; }
+        .btn {
+            cursor: pointer; background-color: var(--window-bg);
+            border: 2px solid var(--border-light); border-right-color: var(--border-dark); border-bottom-color: var(--border-dark);
+            padding: 0 8px; line-height: 24px; user-select: none; flex-grow: 1; text-align: center; color: var(--text-color); font-weight: bold;
+        }
+        .btn:active { border-style: inset; background-color: #ffe4e1; }
+
+        /* --- TASKBAR --- */
+        #taskbar {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 45px;
+            background: var(--taskbar-bg); border-top: 3px solid var(--border-light);
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.2);
+            display: flex; align-items: center; padding: 0 5px; box-sizing: border-box; z-index: 9999; gap: 5px;
+        }
+
+        .start-btn {
+            font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 5px;
+            padding: 0 10px; height: 32px; cursor: pointer; background-color: var(--window-bg);
+            border: 2px solid var(--border-light); border-right-color: var(--border-dark); border-bottom-color: var(--border-dark);
+            user-select: none;
+        }
+        .start-btn:active { border-style: inset; }
+        .taskbar-divider { width: 2px; height: 30px; background-color: var(--border-dark); border-right: 2px solid var(--border-light); margin: 0 5px; }
+
+        .taskbar-app {
+            font-size: 1.2rem; padding: 0 10px; height: 32px; display: none; align-items: center;
+            cursor: pointer; background-color: var(--window-bg);
+            border: 2px solid var(--border-light); border-right-color: var(--border-dark); border-bottom-color: var(--border-dark);
+            min-width: 100px; user-select: none;
+        }
+        .taskbar-app.active { border-style: inset; background-color: #ffe4e1; }
+        .taskbar-app.open { display: flex; }
+
+        /* --- RESIZABLE WINDOW STYLES --- */
+        .window {
+            position: absolute;
+            background-color: var(--window-bg);
+            border: 3px solid var(--border-light); border-right-color: var(--border-dark); border-bottom-color: var(--border-dark);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+            display: none; /* All windows hidden by default */
+            flex-direction: column;
+            resize: both; /* Makes the window adjustable */
+            overflow: hidden; /* Required for resize to work cleanly */
+            min-width: 250px;
+            min-height: 200px;
+        }
+
+        .window::after {
+            content: "◢";
+            position: absolute;
+            bottom: 0px;
+            right: 2px;
+            font-size: 14px;
+            color: var(--border-dark);
+            cursor: se-resize;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .title-bar {
+            background: var(--title-bar); padding: 5px 10px; font-size: 1.2rem;
+            color: white;
+            border-bottom: 2px solid var(--border-dark); display: flex; justify-content: space-between; align-items: center;
+            cursor: grab; user-select: none;
+        }
+        .title-bar:active { cursor: grabbing; }
+
+        .window-controls { display: flex; gap: 4px; }
+        .win-btn {
+            background-color: var(--window-bg); width: 20px; height: 20px; text-align: center; line-height: 16px; cursor: pointer;
+            border: 2px solid var(--border-light); border-right-color: var(--border-dark); border-bottom-color: var(--border-dark);
+            color: var(--text-color);
+            user-select: none;
+        }
+        .win-btn:active { border-style: inset; }
+
+        .content {
+            padding: 15px; flex-grow: 1; overflow-y: auto; font-size: 1.3rem; height: 100%;
+        }
+
+        /* Initial Window Positions */
+        #quotes-window { top: 80px; left: 150px; width: 400px; height: 450px; }
+        #photo-window { top: 120px; left: 200px; width: 450px; height: 350px; }
+        #game-window { top: 60px; left: 250px; width: 700px; height: 500px; }
+
+        .window.maximized {
+            top: 25px !important; left: 0 !important; width: 100vw !important; height: calc(100vh - 70px) !important;
+            resize: none;
+        }
+
+        /* --- QUOTE ENGINE --- */
+        #quote-container { display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
+        .shuffle-btn {
+            width: 100%; padding: 10px; font-family: 'VT323'; font-size: 1.4rem; cursor: pointer;
+            background-color: var(--title-bar); border: 2px solid var(--border-light); border-right-color: var(--border-dark); border-bottom-color: var(--border-dark);
+            margin-bottom: 15px;
+        }
+        .shuffle-btn:active { border-style: inset; }
+        .quote-item { padding: 10px; background-color: rgba(255, 255, 255, 0.5); border: 1px dashed var(--border-dark); }
+
+        /* --- PHOTO GALLERY --- */
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .thumbnail { width: 100px; height: 100px; background-color: #ddd; border: 2px solid var(--border-dark); cursor: pointer; object-fit: cover; }
+        
+        /* --- CAT MINIGAME --- */
+        #game-area {
+            position: relative; width: 100%; height: calc(100% - 40px);
+            background-color: #ff9ff3;
+            background-image: 
+                linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.4)), 
+                linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.4));
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            border: 2px inset var(--border-dark); overflow: hidden;
+        }
+        .game-hud { font-size: 1.5rem; margin-bottom: 10px; font-weight: bold; }
+        .game-cat {
+            position: absolute; width: 100px; height: 100px;
+            background-size: 800px 100px;
+            animation: walk 1s steps(8) infinite;
+            cursor: pointer;
+        }
+        .game-cat:active { opacity: 0.8; }
+        .game-cat.itch { background-size: 200px 100px !important; animation: itch 0.5s steps(2) infinite; }
+        .game-cat.lick { background-size: 500px 100px !important; animation: lick 1s steps(5) infinite; }
+        .game-cat.stretch { background-size: 1300px 100px !important; animation: stretch 2s steps(13) infinite; }
+        .game-cat.lay { background-size: 800px 100px !important; animation: lay 1.5s steps(8) infinite; }
+
+        @keyframes walk {
+            from { background-position: 0px 0; }
+            to { background-position: -800px 0; }
+        }
+
+        @keyframes itch { from { background-position: 0px 0; } to { background-position: -200px 0; } }
+        @keyframes lick { from { background-position: 0px 0; } to { background-position: -500px 0; } }
+        @keyframes stretch { from { background-position: 0px 0; } to { background-position: -1300px 0; } }
+        @keyframes lay { from { background-position: 0px 0; } to { background-position: -800px 0; } }
+        /* --- IMAGE MODAL --- */
+        #image-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        #modal-img { max-width: 100%; max-height: 100%; border: 4px solid var(--window-bg); object-fit: contain; }
+        #close-modal { margin-top: 15px; font-family: 'VT323', monospace; font-size: 1.5rem; color: white; cursor: pointer; }
+
+        /* --- BOOT SEQUENCE --- */
+        #boot-sequence {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #ff9ff3, #ffe4e1); color: var(--border-dark); font-family: 'VT323', monospace;
+            z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            pointer-events: auto;
+        }
+        #boot-title { font-size: 4rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 0px #fff; padding: 0 20px; }
+        #boot-text { font-size: 2rem; margin-bottom: 30px; height: 40px; }
+        #enter-btn {
+            display: none; font-size: 2rem; padding: 10px 30px; cursor: pointer;
+            background: var(--title-bar); color: white; border: 4px outset var(--border-light); font-family: inherit; font-weight: bold;
+        }
+        #enter-btn:active { border-style: inset; }
+
+    </style>
+</head>
+<body>
+
+    <div id="boot-sequence">
+        <div style="font-size: 6rem; margin-bottom: 10px;">🐾</div>
+        <div id="boot-title">trace-a-mon's corner of internet</div>
+        <div id="boot-text"></div>
+        <button id="enter-btn" onclick="startOS()">[ ENTER ]</button>
+    </div>
+
+    <div id="classic-top-bar">
+        <div class="menu-items">
+            <div class="menu-item logo" onclick="openWindow('about-window')">🐾</div>
+            <div class="menu-item" onclick="openWindow('quotes-window')">Snippets</div>
+            <div class="menu-item" onclick="openWindow('photo-window')">Photos</div>
+            <div class="menu-item" onclick="openWindow('game-window')">Neko_Play</div>
+            <div class="menu-item" onclick="openWindow('music-window')">Music</div>
+            <div class="menu-item" onclick="openWindow('adblock-window')">AdBlock</div>
+            <div class="menu-item" onclick="alert('Try petting the cats, or listening to music!')">Help</div>
+        </div>
+        <div class="time-display" id="os-clock" style="font-weight: bold;">12:00 AM</div>
+    </div>
+
+    <div id="desktop">
+        <div class="desktop-icon" data-target="quotes-window">
+            <div class="icon-img">📝</div>
+            <div class="icon-text">Snippets.exe</div>
+        </div>
+        <div class="desktop-icon" data-target="photo-window">
+            <div class="icon-img">🖼️</div>
+            <div class="icon-text">Photos</div>
+        </div>
+        <div class="desktop-icon" data-target="game-window">
+            <div class="icon-img">🐈</div>
+            <div class="icon-text">Neko_Play</div>
+        </div>
+        <div class="desktop-icon" data-target="music-window">
+            <div class="icon-img">🎵</div>
+            <div class="icon-text">Music.exe</div>
+        </div>
+        <div class="desktop-icon" data-target="timer-window">
+            <div class="icon-img">⏳</div>
+            <div class="icon-text">Timer.exe</div>
+        </div>
+        <div class="desktop-icon" data-target="adblock-window">
+            <div class="icon-img">🛡️</div>
+            <div class="icon-text">AdBlock.exe</div>
+        </div>
+        <div class="desktop-icon" data-target="notepad-window">
+            <div class="icon-img">📝</div>
+            <div class="icon-text">Letter.txt</div>
+        </div>
+    </div>
+
+    <div class="window" id="quotes-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="quotes-title">
+            <span>Snippets.exe</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('quotes-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('quotes-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('quotes-window')">x</div>
+            </div>
+        </div>
+        <div class="content">
+            <button class="shuffle-btn" onclick="renderQuotes()">[ SHUFFLE MEMORIES ]</button>
+            <div id="quote-container">
+                </div>
+        </div>
+    </div>
+
+    <div class="window" id="photo-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="photo-title">
+            <span>Photo_Archive.exe</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('photo-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('photo-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('photo-window')">x</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="photo-grid">
+                <div class="crt-wrapper thumbnail"><img class="crt-img" src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo+1" onclick="openModal(this.src)"></div>
+                <div class="crt-wrapper thumbnail"><img class="crt-img" src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo+2" onclick="openModal(this.src)"></div>
+                <div class="crt-wrapper thumbnail"><img class="crt-img" src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo+3" onclick="openModal(this.src)"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="game-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="game-title">
+            <span>Neko_Playground.exe</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('game-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('game-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('game-window')">x</div>
+            </div>
+        </div>
+        <div class="content" style="display: flex; flex-direction: column; overflow: hidden;">
+            <div class="game-hud">Cats Petted: <span id="score">0</span></div>
+            <div id="game-area">
+                </div>
+        </div>
+    </div>
+
+    <div class="window" id="music-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="music-title">
+            <span>Music_Player.exe</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('music-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('music-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('music-window')">x</div>
+            </div>
+        </div>
+        <div class="content" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; background-color: #111;">
+            <div style="flex-grow: 1; border: 2px inset var(--border-light); width: 100%; display: flex; justify-content: center; align-items: center; background-color: #000; position: relative;">
+                <div class="crt-wrapper">
+                    <div id="youtube-player" class="crt-img"></div>
+                </div>
+            </div>
+            <marquee scrollamount="5" id="now-playing" style="color: #00ff00; font-family: monospace; font-size: 1.2rem; margin: 0; padding: 2px;">Loading playlist metadata...</marquee>
+            <div class="music-controls" style="margin: 0; padding: 5px; justify-content: space-between; background: var(--window-bg); border: 2px outset var(--border-light);">
+                <div class="btn" id="play-btn">PLAY</div>
+                <div class="btn" id="pause-btn">PAUSE</div>
+                <div class="btn" id="next-btn">NEXT</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="about-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="about-title">
+            <span>About_OS</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="closeWindow('about-window')">x</div>
+            </div>
+        </div>
+        <div class="content" style="text-align: center; padding-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+            <div style="font-size: 5rem;">🐾</div>
+            <div style="font-size: 1.8rem; font-weight: bold;">Goodbye Gift OS</div>
+        </div>
+    </div>
+
+    <div class="window" id="adblock-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="adblock-title">
+            <span>AdBlock_Setup.exe</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('adblock-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('adblock-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('adblock-window')">x</div>
+            </div>
+        </div>
+        <div class="content" style="display: flex; flex-direction: column; gap: 15px; font-size: 1.4rem;">
+            <h2 style="margin: 0; border-bottom: 2px dashed var(--border-dark); padding-bottom: 10px;">uBlock Origin Lite Setup</h2>
+            <p style="margin: 0;">For an ad-free web experience, we highly recommend installing <strong>uBlock Origin Lite</strong>.</p>
+            <ol style="margin: 0; padding-left: 25px; line-height: 1.6;">
+                <li>Search for "uBlock Origin Lite" in Google Chrome, or click the link below.</li>
+                <li>Make sure you are on the official Chrome Web Store page.</li>
+                <li>Click the blue <strong>"Add to Chrome"</strong> button.</li>
+                <li>Confirm by clicking <strong>"Add extension"</strong> in the popup.</li>
+            </ol>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh" target="_blank" style="background: var(--title-bar); color: #ffffff !important; padding: 10px 15px; text-decoration: none; border: 2px outset var(--border-light); font-weight: bold; display: inline-block; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Get uBlock Origin Lite</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="notepad-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="notepad-title" style="background: #000080; color: white;">
+            <span>Letter.txt - Notepad</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('notepad-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('notepad-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('notepad-window')">x</div>
+            </div>
+        </div>
+        <div class="content" style="padding: 0; display: flex; flex-direction: column; background-color: #fff; color: #000; font-family: 'Courier New', Courier, monospace; font-size: 1.1rem;">
+            <div style="border-bottom: 1px solid #ccc; background: #ece9d8; padding: 2px 10px; font-family: sans-serif; font-size: 0.9rem;">
+                File &nbsp; Edit &nbsp; Format &nbsp; View &nbsp; Help
+            </div>
+            <textarea style="flex-grow: 1; width: 100%; border: none; resize: none; padding: 10px; font-family: inherit; font-size: inherit; outline: none; box-sizing: border-box;" readonly>
+Dear [Name],
+
+I wanted to make something special for you before you leave. This isn't just a goodbye, it's a little world I built so you'd always have a piece of home with you.
+
+Take care, stay safe, and don't forget to pet the cats!
+
+Love,
+[Your Name]
+            </textarea>
+        </div>
+    </div>
+
+    <div class="window" id="timer-window" onmousedown="bringToFront(this)">
+        <div class="title-bar" id="timer-title">
+            <span>Timer.exe</span>
+            <div class="window-controls">
+                <div class="win-btn" onclick="minimizeWindow('timer-window')">_</div>
+                <div class="win-btn" onclick="toggleMaximize('timer-window')">□</div>
+                <div class="win-btn" onclick="closeWindow('timer-window')">x</div>
+            </div>
+        </div>
+        <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 20px;">
+            <div style="font-size: 2.5rem; font-weight: bold; background: var(--title-bar); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Departure Flight ✈️</div>
+            <div id="countdown-display" style="font-size: 3.5rem; font-weight: bold; color: var(--border-dark); text-shadow: 2px 2px 0 #fff;"></div>
+        </div>
+    </div>
+
+    <div id="taskbar">
+        <div class="start-btn">♥ START</div>
+        <div class="taskbar-divider"></div>
+        <div class="taskbar-app" id="task-quotes-window" onclick="toggleWindowFromTaskbar('quotes-window')">Snippets.exe</div>
+        <div class="taskbar-app" id="task-photo-window" onclick="toggleWindowFromTaskbar('photo-window')">Photos</div>
+        <div class="taskbar-app" id="task-game-window" onclick="toggleWindowFromTaskbar('game-window')">Neko_Play</div>
+        <div class="taskbar-app" id="task-music-window" onclick="toggleWindowFromTaskbar('music-window')">Music</div>
+        <div class="taskbar-app" id="task-timer-window" onclick="toggleWindowFromTaskbar('timer-window')">Timer</div>
+        <div class="taskbar-app" id="task-adblock-window" onclick="toggleWindowFromTaskbar('adblock-window')">AdBlock</div>
+        <div class="taskbar-app" id="task-notepad-window" onclick="toggleWindowFromTaskbar('notepad-window')">Notepad</div>
+    </div>
+
+    <div id="image-modal">
+        <div class="crt-wrapper" style="width: 80vw; height: 80vh; max-width: 800px; max-height: 800px; margin: auto;">
+            <img id="modal-img" class="crt-img" src="">
+        </div>
+        <div id="close-modal" onclick="closeModal()">[ CLICK HERE TO CLOSE ]</div>
+    </div>
+
+    <script>
+        let highestZIndex = 11; 
+
+        // --- 1. WINDOW DRAGGING ENGINE ---
+        function makeDraggable(windowElement, titleBarElement) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            titleBarElement.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                bringToFront(windowElement);
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+                pos3 = e.clientX; pos4 = e.clientY;
+                let newTop = windowElement.offsetTop - pos2;
+                let newLeft = windowElement.offsetLeft - pos1;
+                if(newTop < 40) newTop = 40; 
+                windowElement.style.top = newTop + "px";
+                windowElement.style.left = newLeft + "px";
+            }
+            function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
+        }
+
+        function makeIconDraggable(iconElement) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            iconElement.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                bringToFront(iconElement); // optional z-index pop
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+                pos3 = e.clientX; pos4 = e.clientY;
+                iconElement.style.top = (iconElement.offsetTop - pos2) + "px";
+                iconElement.style.left = (iconElement.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement(e) {
+                document.onmouseup = null; document.onmousemove = null;
+                if (Math.abs(pos1) < 3 && Math.abs(pos2) < 3) {
+                    let targetWindow = iconElement.getAttribute('data-target');
+                    if (targetWindow) openWindow(targetWindow);
+                }
+            }
+        }
+
+        makeDraggable(document.getElementById("quotes-window"), document.getElementById("quotes-title"));
+        makeDraggable(document.getElementById("photo-window"), document.getElementById("photo-title"));
+        makeDraggable(document.getElementById("game-window"), document.getElementById("game-title"));
+        makeDraggable(document.getElementById("music-window"), document.getElementById("music-title"));
+        makeDraggable(document.getElementById("timer-window"), document.getElementById("timer-title"));
+        makeDraggable(document.getElementById("about-window"), document.getElementById("about-title"));
+        makeDraggable(document.getElementById("adblock-window"), document.getElementById("adblock-title"));
+        makeDraggable(document.getElementById("notepad-window"), document.getElementById("notepad-title"));
+
+        // --- 2. OS STATE MANAGEMENT ---
+        function bringToFront(element) {
+            highestZIndex++;
+            element.style.zIndex = highestZIndex;
+            document.querySelectorAll('.taskbar-app').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('task-' + element.id).classList.add('active');
+        }
+
+        function openWindow(windowId) {
+            const win = document.getElementById(windowId);
+            win.style.display = 'flex';
+            document.getElementById('task-' + windowId).classList.add('open');
+            bringToFront(win);
+            
+            if(windowId === 'quotes-window' && document.getElementById('quote-container').innerHTML.trim() === "") {
+                renderQuotes(); // Render quotes first time it opens
+            }
+        }
+
+        document.querySelectorAll('.desktop-icon').forEach(icon => makeIconDraggable(icon));
+
+        function closeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+            document.getElementById('task-' + windowId).classList.remove('open', 'active');
+        }
+
+        function minimizeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+            document.getElementById('task-' + windowId).classList.remove('active');
+        }
+
+        function toggleWindowFromTaskbar(windowId) {
+            const win = document.getElementById(windowId);
+            const taskBtn = document.getElementById('task-' + windowId);
+            if (win.style.display === 'none') {
+                win.style.display = 'flex';
+                bringToFront(win);
+            } else {
+                if (taskBtn.classList.contains('active')) minimizeWindow(windowId);
+                else bringToFront(win);
+            }
+        }
+
+        function toggleMaximize(windowId) {
+            const win = document.getElementById(windowId);
+            win.classList.toggle('maximized');
+            bringToFront(win);
+        }
+
+        // --- 3. DYNAMIC QUOTE ENGINE ---
+        const quotes = [
+            "Remember that epic game of Blood on the Clocktower?",
+            "Like a wise mustachioed coach once said: Believe.",
+            "That time we tried to cook low-fat ground turkey and it was actually good...",
+            "A memory I'll always cherish is when we stayed up way too late.",
+            "This OS was built just for you.",
+            "Another beautiful memory placeholder goes right here."
+        ];
+        
+        const alignments = ['left', 'center', 'right'];
+
+        function renderQuotes() {
+            const container = document.getElementById('quote-container');
+            container.innerHTML = ''; // Clear current
+            
+            // Shuffle array
+            const shuffled = [...quotes].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach(q => {
+                let div = document.createElement('div');
+                div.className = 'quote-item';
+                div.innerText = q;
+                
+                // Randomize appearance
+                div.style.textAlign = alignments[Math.floor(Math.random() * alignments.length)];
+                let randomFontSize = (Math.random() * 0.4 + 1.1).toFixed(2); // Between 1.1rem and 1.5rem
+                div.style.fontSize = randomFontSize + 'rem';
+                
+                // Randomize slight rotation for a scrapbook feel
+                let randomRot = (Math.random() * 4 - 2).toFixed(1); 
+                div.style.transform = `rotate(${randomRot}deg)`;
+
+                container.appendChild(div);
+            });
+        }
+
+        // --- 4. CAT MINIGAME ENGINE ---
+        const gameArea = document.getElementById('game-area');
+        let score = 0;
+        let cats = [];
+
+        function initCatGame() {
+            for(let i=0; i<10; i++) {
+                createGameCat();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        function createGameCat() {
+            let cat = document.createElement('div');
+            cat.className = 'game-cat';
+            
+            let catType = Math.floor(Math.random() * 6) + 1; // 1 to 6
+            cat.style.backgroundImage = `url('assets/Pet Cats Pack/Cat-${catType}/Cat-${catType}-Walk.png')`;
+
+            // Physics properties
+            let x = Math.random() * 300;
+            let y = Math.random() * 200;
+            let dx = (Math.random() - 0.5) * 4;
+            let dy = (Math.random() - 0.5) * 4;
+
+            cat.style.left = x + 'px';
+            cat.style.top = y + 'px';
+
+            cat.addEventListener('mousedown', function(e) {
+                e.stopPropagation(); // Prevent window dragging
+                let cObj = cats.find(c => c.el === cat);
+                if(cObj && cObj.isPetting) return; // Prevent multiple clicks
+                if(cObj) cObj.isPetting = true;
+
+                score++;
+                document.getElementById('score').innerText = score;
+
+                // Stop movement
+                if(cObj) {
+                    cObj.dx = 0;
+                    cObj.dy = 0;
+                }
+
+                // Pick a random animation
+                let actions = ['itch', 'lick', 'stretch', 'lay'];
+                let fileNames = ['Itch', 'Licking 1', 'Stretching', 'Laying'];
+                let rIdx = Math.floor(Math.random() * actions.length);
+                let actionCls = actions[rIdx];
+                let fileName = fileNames[rIdx];
+
+                cat.classList.add(actionCls);
+                cat.style.backgroundImage = `url('assets/Pet Cats Pack/Cat-${catType}/Cat-${catType}-${fileName}.png')`;
+
+                // Show floating text
+                let cx = parseFloat(cat.style.left);
+                let cy = parseFloat(cat.style.top);
+                let floatText = document.createElement('div');
+                floatText.innerHTML = "❤️ Purr...";
+                floatText.style.position = 'absolute';
+                floatText.style.left = (cx + 20) + 'px';
+                floatText.style.top = (cy - 40) + 'px';
+                floatText.style.color = '#ff4757';
+                floatText.style.fontWeight = 'bold';
+                floatText.style.fontSize = '1.2rem';
+                floatText.style.textShadow = '1px 1px 0 #fff';
+                floatText.style.pointerEvents = 'none';
+                floatText.style.transition = 'all 1s ease-out';
+                floatText.style.zIndex = '100';
+                gameArea.appendChild(floatText);
+                
+                setTimeout(() => {
+                    floatText.style.top = (cy - 80) + 'px';
+                    floatText.style.opacity = '0';
+                }, 50);
+                setTimeout(() => floatText.remove(), 1000);
+
+                setTimeout(() => {
+                    cat.classList.remove(actionCls);
+                    cat.style.backgroundImage = `url('assets/Pet Cats Pack/Cat-${catType}/Cat-${catType}-Walk.png')`;
+                    if(cObj) {
+                        cObj.dx = (Math.random() - 0.5) * 4;
+                        cObj.dy = (Math.random() - 0.5) * 4;
+                        cObj.isPetting = false;
+                    }
+                }, 4000);
+            });
+
+            gameArea.appendChild(cat);
+            cats.push({ el: cat, x: x, y: y, dx: dx, dy: dy, isPetting: false, flip: "scaleX(1)" });
+        }
+
+        function gameLoop() {
+            let bounds = gameArea.getBoundingClientRect();
+            
+            cats.forEach(c => {
+                c.x += c.dx;
+                c.y += c.dy;
+
+                // Bounce off walls (accounting for 100px width/height)
+                if(c.x <= 0 || c.x >= bounds.width - 100) c.dx *= -1;
+                if(c.y <= 0 || c.y >= bounds.height - 100) c.dy *= -1;
+
+                // Enforce boundaries strictly in case resize traps them
+                if(c.x < 0) c.x = 0;
+                if(c.y < 0) c.y = 0;
+                if(c.x > bounds.width - 100) c.x = bounds.width - 100;
+                if(c.y > bounds.height - 100) c.y = bounds.height - 100;
+
+                // Apply friction if moving too fast
+                if(Math.abs(c.dx) > 2) c.dx *= 0.99;
+                if(Math.abs(c.dy) > 2) c.dy *= 0.99;
+
+                if (c.dx !== 0) {
+                    c.flip = c.dx < 0 ? "scaleX(-1)" : "scaleX(1)";
+                }
+                c.el.style.transform = c.flip;
+
+                c.el.style.left = c.x + 'px';
+                c.el.style.top = c.y + 'px';
+            });
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game logic
+        initCatGame();
+
+        // --- 5. PHOTO & YOUTUBE LOGIC ---
+        function openModal(src) { document.getElementById('modal-img').src = src; document.getElementById('image-modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('image-modal').style.display = 'none'; }
+
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var player;
+        
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '100%', width: '100%',
+                playerVars: { 'listType': 'playlist', 'list': 'OLAK5uy_mUsEiA5KwoZvN4_J4cfShUINMEp8hv7GQ', 'loop': 1, 'controls': 1, 'autoplay': 0 },
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+            });
+        }
+        function onPlayerReady(event) {
+            document.getElementById('now-playing').innerText = "Playlist Loaded. Press PLAY to start...";
+            document.getElementById('play-btn').addEventListener('click', () => player.playVideo());
+            document.getElementById('pause-btn').addEventListener('click', () => player.pauseVideo());
+            document.getElementById('next-btn').addEventListener('click', () => player.nextVideo());
+        }
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                var videoData = player.getVideoData();
+                document.getElementById('now-playing').innerText = `▶ Now Playing: ${videoData.title || "Unknown Track"} by ${videoData.author || "Unknown Artist"}`;
+            }
+        }
+
+        // --- 6. SYSTEM CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('os-clock').innerText = hours + ':' + minutes + ' ' + ampm;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- 7. TIMER ENGINE ---
+        const departureDate = new Date("May 28, 2026 00:00:00").getTime();
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = departureDate - now;
+            const display = document.getElementById('countdown-display');
+            if (!display) return;
+
+            if (diff > 0) {
+                // Countdown
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                display.innerText = `-${days}d ${hours}h ${mins}m ${secs}s`;
+            } else {
+                // Count up (time passed since departure)
+                const past = now - departureDate;
+                
+                const totalDays = Math.floor(past / (1000 * 60 * 60 * 24));
+                const years = Math.floor(totalDays / 365);
+                const months = Math.floor((totalDays % 365) / 30);
+                const days = (totalDays % 365) % 30;
+
+                let timeString = "+ ";
+                if (years > 0) timeString += `${years}y `;
+                if (months > 0) timeString += `${months}m `;
+                timeString += `${days}d`;
+                
+                display.innerText = timeString;
+            }
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // --- 8. BOOT SEQUENCE & ICON LAYOUT ---
+        function scatterIcons() {
+            const icons = document.querySelectorAll('.desktop-icon');
+            const padding = 20;
+            const iconWidth = 100;
+            const iconHeight = 100;
+            const maxW = window.innerWidth - iconWidth - padding;
+            const maxH = window.innerHeight - 70 - 25 - iconHeight - padding; // subtract taskbar and topbar
+            
+            icons.forEach(icon => {
+                let rX = Math.floor(Math.random() * (maxW - padding)) + padding;
+                let rY = Math.floor(Math.random() * (maxH - padding)) + padding;
+                // prevent negative positions if screen is somehow tiny
+                rX = Math.max(padding, rX);
+                rY = Math.max(padding, rY);
+                icon.style.left = rX + "px";
+                icon.style.top = rY + "px";
+            });
+        }
+
+        const bootLines = [
+            "Waking up the cats...",
+            "Polishing the desktop...",
+            "Gathering memories...",
+            "Loading maximum cuteness..."
+        ];
+        
+        let bootIndex = 0;
+        const bootEl = document.getElementById("boot-text");
+        const enterBtn = document.getElementById("enter-btn");
+        
+        function runBoot() {
+            if (bootIndex < bootLines.length) {
+                bootEl.innerText = bootLines[bootIndex];
+                bootIndex++;
+                setTimeout(runBoot, 800); 
+            } else {
+                bootEl.innerText = "All set! Ready when you are.";
+                enterBtn.style.display = "inline-block";
+            }
+        }
+        
+        function startOS() {
+            document.getElementById("boot-sequence").style.display = "none";
+            scatterIcons();
+        }
+        
+        window.addEventListener('load', runBoot);
+
+    </script>
+</body>
+</html>
