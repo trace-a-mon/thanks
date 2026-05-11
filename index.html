@@ -658,6 +658,71 @@
         #enter-btn:active {
             border-style: inset;
         }
+
+        /* --- NOTEPAD TABS --- */
+        .notepad-tabs {
+            display: flex;
+            gap: 2px;
+            background: #ece9d8;
+            padding: 3px 5px 0;
+            border-bottom: 1px solid #ccc;
+            overflow-x: auto;
+        }
+        .notepad-tab {
+            padding: 2px 10px;
+            cursor: pointer;
+            border: 1px solid #aaa;
+            border-bottom: none;
+            background: #d4d0c8;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+        .notepad-tab.active { background: #fff; }
+
+        /* --- MODAL CAPTION --- */
+        #modal-caption {
+            color: white;
+            font-size: 1.4rem;
+            margin-top: 10px;
+            text-align: center;
+            text-shadow: 1px 1px 2px #000;
+            max-width: 80vw;
+        }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; cursor: auto; }
+            #classic-top-bar { flex-wrap: wrap; height: auto; min-height: 25px; }
+            .menu-items { flex-wrap: wrap; gap: 5px; }
+            .menu-item { font-size: 1rem; padding: 2px 6px; }
+            #desktop { display: none; }
+            #taskbar { position: fixed; flex-wrap: wrap; height: auto; gap: 4px; padding: 5px; }
+            .taskbar-app { min-width: 70px; font-size: 1rem; height: 28px; display: flex; }
+            .window {
+                display: flex !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 300px !important;
+                top: auto !important; left: auto !important;
+                margin: 5px 0;
+                resize: none;
+            }
+            #boot-sequence { padding: 20px; }
+            #boot-title { font-size: 2.5rem; }
+            #enter-btn { font-size: 1.5rem; }
+            .window.maximized { position: relative !important; width: 100% !important; height: auto !important; }
+            #music-window, #timer-window, #about-window, #adblock-window,
+            #notepad-window, #quotes-window, #photo-window, #game-window {
+                left: 0 !important; top: auto !important; width: 100% !important;
+            }
+            #game-area { height: 250px; }
+            .photo-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+            #image-modal { padding: 10px; }
+            #taskbar { bottom: 0; position: fixed; z-index: 9999; }
+            body { padding-bottom: 80px; }
+        }
     </style>
 </head>
 
@@ -740,16 +805,8 @@
             </div>
         </div>
         <div class="content">
-            <div class="photo-grid">
-                <div class="crt-wrapper thumbnail"><img class="crt-img"
-                        src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo+1" onclick="openModal(this.src)">
-                </div>
-                <div class="crt-wrapper thumbnail"><img class="crt-img"
-                        src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo+2" onclick="openModal(this.src)">
-                </div>
-                <div class="crt-wrapper thumbnail"><img class="crt-img"
-                        src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo+3" onclick="openModal(this.src)">
-                </div>
+            <div class="photo-grid" id="photo-grid">
+                <div style="color: var(--border-dark); font-size:1.1rem;">Loading photos...</div>
             </div>
         </div>
     </div>
@@ -844,31 +901,21 @@
 
     <div class="window" id="notepad-window" onmousedown="bringToFront(this)">
         <div class="title-bar" id="notepad-title" style="background: #000080; color: white;">
-            <span>Letter.txt - Notepad</span>
+            <span id="notepad-title-text">Notepad</span>
             <div class="window-controls">
                 <div class="win-btn" onclick="minimizeWindow('notepad-window')">_</div>
                 <div class="win-btn" onclick="toggleMaximize('notepad-window')">□</div>
                 <div class="win-btn" onclick="closeWindow('notepad-window')">x</div>
             </div>
         </div>
-        <div class="content"
-            style="padding: 0; display: flex; flex-direction: column; background-color: #fff; color: #000; font-family: 'Courier New', Courier, monospace; font-size: 1.1rem;">
-            <div
-                style="border-bottom: 1px solid #ccc; background: #ece9d8; padding: 2px 10px; font-family: sans-serif; font-size: 0.9rem;">
+        <div class="content" style="padding: 0; display: flex; flex-direction: column; background-color: #fff; color: #000; font-family: 'Courier New', Courier, monospace; font-size: 1.1rem;">
+            <div style="border-bottom: 1px solid #ccc; background: #ece9d8; padding: 2px 10px; font-family: sans-serif; font-size: 0.9rem;">
                 File &nbsp; Edit &nbsp; Format &nbsp; View &nbsp; Help
             </div>
-            <textarea
+            <div class="notepad-tabs" id="notepad-tabs"></div>
+            <textarea id="notepad-textarea"
                 style="flex-grow: 1; width: 100%; border: none; resize: none; padding: 10px; font-family: inherit; font-size: inherit; outline: none; box-sizing: border-box;"
-                readonly>
-Dear [Name],
-
-I wanted to make something special for you before you leave. This isn't just a goodbye, it's a little world I built so you'd always have a piece of home with you.
-
-Take care, stay safe, and don't forget to pet the cats!
-
-Love,
-[Your Name]
-            </textarea>
+                readonly>Loading...</textarea>
         </div>
     </div>
 
@@ -911,6 +958,7 @@ Love,
         <div class="crt-wrapper" style="width: 80vw; height: 80vh; max-width: 800px; max-height: 800px; margin: auto;">
             <img id="modal-img" class="crt-img" src="">
         </div>
+        <div id="modal-caption"></div>
         <div id="close-modal" onclick="closeModal()">[ CLICK HERE TO CLOSE ]</div>
     </div>
 
@@ -1030,39 +1078,27 @@ Love,
             bringToFront(win);
         }
 
-        // --- 3. DYNAMIC QUOTE ENGINE ---
-        const quotes = [
-            "Remember that epic game of Blood on the Clocktower?",
-            "Like a wise mustachioed coach once said: Believe.",
-            "That time we tried to cook low-fat ground turkey and it was actually good...",
-            "A memory I'll always cherish is when we stayed up way too late.",
-            "This OS was built just for you.",
-            "Another beautiful memory placeholder goes right here."
-        ];
-
+        // --- 3. DYNAMIC QUOTE ENGINE (loads from content/snippets.dat) ---
+        let quotes = [];
         const alignments = ['left', 'center', 'right'];
+
+        fetch('content/snippets.dat')
+            .then(r => r.text())
+            .then(b64 => { quotes = JSON.parse(atob(b64.trim())); })
+            .catch(() => { quotes = ["Could not load snippets."]; });
 
         function renderQuotes() {
             const container = document.getElementById('quote-container');
-            container.innerHTML = ''; // Clear current
-
-            // Shuffle array
+            container.innerHTML = '';
+            if (!quotes.length) { container.innerHTML = '<div class="quote-item">No snippets yet.</div>'; return; }
             const shuffled = [...quotes].sort(() => Math.random() - 0.5);
-
             shuffled.forEach(q => {
                 let div = document.createElement('div');
                 div.className = 'quote-item';
                 div.innerText = q;
-
-                // Randomize appearance
                 div.style.textAlign = alignments[Math.floor(Math.random() * alignments.length)];
-                let randomFontSize = (Math.random() * 0.4 + 1.1).toFixed(2); // Between 1.1rem and 1.5rem
-                div.style.fontSize = randomFontSize + 'rem';
-
-                // Randomize slight rotation for a scrapbook feel
-                let randomRot = (Math.random() * 4 - 2).toFixed(1);
-                div.style.transform = `rotate(${randomRot}deg)`;
-
+                div.style.fontSize = (Math.random() * 0.4 + 1.1).toFixed(2) + 'rem';
+                div.style.transform = `rotate(${(Math.random() * 4 - 2).toFixed(1)}deg)`;
                 container.appendChild(div);
             });
         }
@@ -1195,8 +1231,69 @@ Love,
         initCatGame();
 
         // --- 5. PHOTO & YOUTUBE LOGIC ---
-        function openModal(src) { document.getElementById('modal-img').src = src; document.getElementById('image-modal').style.display = 'flex'; }
+        // Load photos from manifest
+        fetch('assets/images/manifest.json')
+            .then(r => r.json())
+            .then(photos => {
+                const grid = document.getElementById('photo-grid');
+                grid.innerHTML = '';
+                if (!photos.length) { grid.innerHTML = '<div style="color:var(--border-dark)">No photos yet.</div>'; return; }
+                photos.forEach(p => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'crt-wrapper thumbnail';
+                    const img = document.createElement('img');
+                    img.className = 'crt-img';
+                    img.src = p.src;
+                    img.alt = p.caption || '';
+                    img.onclick = () => openModal(p.src, p.caption || '');
+                    wrap.appendChild(img);
+                    grid.appendChild(wrap);
+                });
+            })
+            .catch(() => {
+                document.getElementById('photo-grid').innerHTML = '<div style="color:var(--border-dark)">Could not load photos.</div>';
+            });
+
+        function openModal(src, caption) {
+            document.getElementById('modal-img').src = src;
+            document.getElementById('modal-caption').innerText = caption || '';
+            document.getElementById('image-modal').style.display = 'flex';
+        }
         function closeModal() { document.getElementById('image-modal').style.display = 'none'; }
+
+        // --- 5b. NOTEPAD: load txt files from content/texts.json ---
+        fetch('content/texts.json')
+            .then(r => r.json())
+            .then(files => {
+                const tabsEl = document.getElementById('notepad-tabs');
+                const textarea = document.getElementById('notepad-textarea');
+                const titleEl = document.getElementById('notepad-title-text');
+                function loadFile(filename) {
+                    fetch('content/' + filename)
+                        .then(r => r.text())
+                        .then(txt => {
+                            try {
+                                // Try to decode as base64, fallback to plaintext if it fails
+                                textarea.value = decodeURIComponent(escape(atob(txt.trim())));
+                            } catch (e) {
+                                textarea.value = txt;
+                            }
+                            titleEl.innerText = filename + ' - Notepad';
+                            tabsEl.querySelectorAll('.notepad-tab').forEach(t => t.classList.toggle('active', t.dataset.file === filename));
+                        })
+                        .catch(() => { textarea.value = 'Could not load ' + filename; });
+                }
+                files.forEach((f, i) => {
+                    const tab = document.createElement('div');
+                    tab.className = 'notepad-tab' + (i === 0 ? ' active' : '');
+                    tab.dataset.file = f;
+                    tab.innerText = f;
+                    tab.onclick = () => loadFile(f);
+                    tabsEl.appendChild(tab);
+                });
+                if (files.length) loadFile(files[0]);
+            })
+            .catch(() => { document.getElementById('notepad-textarea').value = 'Could not load texts.json'; });
 
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
